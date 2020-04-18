@@ -1,7 +1,5 @@
 package org.codingsquid.r2dbc.mysql.select;
 
-import dev.miku.r2dbc.mysql.MySqlConnectionFactory;
-import io.r2dbc.spi.ConnectionFactory;
 import org.codingsquid.r2dbc.entity.User;
 import org.codingsquid.r2dbc.mysql.R2dbcConnectionHelper;
 import org.junit.jupiter.api.Test;
@@ -22,8 +20,7 @@ public class ReadSpec {
 
     @Test
     void readOne() {
-        ConnectionFactory factory = MySqlConnectionFactory.from(R2dbcConnectionHelper.getConfiguration("localhost", "root", "1234", "r2dbc"));
-        DatabaseClient client = DatabaseClient.create(factory);
+        DatabaseClient client = R2dbcConnectionHelper.getClient();
 
         client.select()
             .from(User.class)
@@ -37,8 +34,7 @@ public class ReadSpec {
 
     @Test
     void readBy() {
-        ConnectionFactory factory = MySqlConnectionFactory.from(R2dbcConnectionHelper.getConfiguration("localhost", "root", "1234", "r2dbc"));
-        DatabaseClient client = DatabaseClient.create(factory);
+        DatabaseClient client = R2dbcConnectionHelper.getClient();
 
         client.select()
             .from(User.class)
@@ -53,8 +49,7 @@ public class ReadSpec {
 
     @Test
     void readMany() {
-        ConnectionFactory factory = MySqlConnectionFactory.from(R2dbcConnectionHelper.getConfiguration("localhost", "root", "1234", "r2dbc"));
-        DatabaseClient client = DatabaseClient.create(factory);
+        DatabaseClient client = R2dbcConnectionHelper.getClient();
 
         client.select()
             .from(User.class)

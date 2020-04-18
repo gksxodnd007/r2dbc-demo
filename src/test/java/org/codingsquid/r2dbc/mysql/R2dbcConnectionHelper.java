@@ -1,6 +1,9 @@
 package org.codingsquid.r2dbc.mysql;
 
 import dev.miku.r2dbc.mysql.MySqlConnectionConfiguration;
+import dev.miku.r2dbc.mysql.MySqlConnectionFactory;
+import io.r2dbc.spi.ConnectionFactory;
+import org.springframework.data.r2dbc.core.DatabaseClient;
 
 import java.time.Duration;
 
@@ -20,5 +23,13 @@ public class R2dbcConnectionHelper {
             .connectTimeout(Duration.ofSeconds(5))
             .useServerPrepareStatement()
             .build();
+    }
+
+    public static DatabaseClient getClient() {
+        return getClient(MySqlConnectionFactory.from(getConfiguration("localhost", "root", "1234", "r2dbc")));
+    }
+
+    public static DatabaseClient getClient(ConnectionFactory factory) {
+        return DatabaseClient.create(factory);
     }
 }
