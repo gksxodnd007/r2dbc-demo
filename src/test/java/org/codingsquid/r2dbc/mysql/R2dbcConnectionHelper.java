@@ -25,8 +25,16 @@ public class R2dbcConnectionHelper {
             .build();
     }
 
+    public static MySqlConnectionConfiguration getConfiguration() {
+        return getConfiguration("localhost", "root", "1234", "r2dbc");
+    }
+
+    public static ConnectionFactory getMysqlConnectionFactory() {
+        return MySqlConnectionFactory.from(getConfiguration());
+    }
+
     public static DatabaseClient getClient() {
-        return getClient(MySqlConnectionFactory.from(getConfiguration("localhost", "root", "1234", "r2dbc")));
+        return getClient(getMysqlConnectionFactory());
     }
 
     public static DatabaseClient getClient(ConnectionFactory factory) {

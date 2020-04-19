@@ -8,19 +8,19 @@ import org.springframework.data.relational.core.mapping.Table;
 
 /**
  * @author hubert.squid
- * @since 2020.04.18
+ * @since 2020.04.19
  */
 @Data
 @AllArgsConstructor
-@Table(value = "users")
-public class User {
+@Table(value = "items")
+public class Item {
 
     @Id
     private Long id;
+    @Column(value = "user_id")
+    private Long userId;
     @Column(value = "name")
     private String name;
-    @Column(value = "age")
-    private int age;
-    @Column(value = "description")
-    private String description;
+    @Column(value = "price")
+    private double price;
 }

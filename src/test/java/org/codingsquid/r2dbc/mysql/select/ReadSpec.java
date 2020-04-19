@@ -60,4 +60,9 @@ public class ReadSpec {
             .expectNextCount(4)
             .verifyComplete();
     }
+
+    @Test
+    void readPaging() {
+
+    }
 }
