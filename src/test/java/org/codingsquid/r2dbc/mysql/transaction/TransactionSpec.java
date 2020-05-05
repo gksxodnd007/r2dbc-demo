@@ -5,14 +5,11 @@ import org.codingsquid.r2dbc.entity.Item;
 import org.codingsquid.r2dbc.entity.User;
 import org.codingsquid.r2dbc.mysql.R2dbcConnectionHelper;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.r2dbc.connectionfactory.R2dbcTransactionManager;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.CriteriaDefinition;
 import org.springframework.transaction.ReactiveTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -23,12 +20,10 @@ import reactor.test.StepVerifier;
  */
 public class TransactionSpec {
 
-    private static final Logger logger = LoggerFactory.getLogger(TransactionSpec.class);
-
     @Test
     void whenSuccess() {
         ConnectionFactory factory = R2dbcConnectionHelper.getMysqlConnectionFactory();
-        ReactiveTransactionManager tm = new R2dbcTransactionManager(R2dbcConnectionHelper.getMysqlConnectionFactory());
+        ReactiveTransactionManager tm = new R2dbcTransactionManager(factory);
         TransactionalOperator operator = TransactionalOperator.create(tm);
 
         DatabaseClient client = DatabaseClient.create(factory);
@@ -46,7 +41,7 @@ public class TransactionSpec {
                 .one()
                 .flatMap(user -> client.insert()
                     .into(Item.class)
-                    .using(new Item(null, user.getId(), "mackbook", 3200000))
+                    .using(new Item(null, user.getId(), "macbook", 3200000))
                     .then())
                 .then();
 
@@ -54,5 +49,29 @@ public class TransactionSpec {
         })
             .as(StepVerifier::create)
             .verifyComplete();
+    }
+
+    @Test
+    void whenFail() {
+        ConnectionFactory factory = R2dbcConnectionHelper.getMysqlConnectionFactory();
+        ReactiveTransactionManager tm = new R2dbcTransactionManager(factory);
+        TransactionalOperator operator = TransactionalOperator.create(tm);
+
+        DatabaseClient client = DatabaseClient.create(factory);
+        client.insert()
+            .into(User.class)
+            .using(new User(null, "codingsquid", 27, "Those who love spring"))
+            .fetch()
+            .one()
+            .flatMap(result -> client.insert()
+                .into(Item.class)
+                .using(new Item(null, Long.parseLong(result.get("LAST_INSERT_ID").toString()), "macbook", 3200000))
+                .then()
+            )
+            .then(Mono.error(RuntimeException::new))
+            .as(operator::transactional)
+            .as(StepVerifier::create)
+            .expectError()
+            .verify();
     }
 }

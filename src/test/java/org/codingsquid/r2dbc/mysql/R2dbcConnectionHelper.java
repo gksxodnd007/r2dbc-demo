@@ -22,6 +22,7 @@ public class R2dbcConnectionHelper {
             .port(3306)
             .connectTimeout(Duration.ofSeconds(5))
             .useServerPrepareStatement()
+            .useClientPrepareStatement()
             .build();
     }
 
