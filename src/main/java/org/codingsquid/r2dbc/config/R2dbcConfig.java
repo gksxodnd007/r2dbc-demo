@@ -2,6 +2,8 @@ package org.codingsquid.r2dbc.config;
 
 import dev.miku.r2dbc.mysql.MySqlConnectionConfiguration;
 import dev.miku.r2dbc.mysql.MySqlConnectionFactory;
+import io.r2dbc.pool.ConnectionPool;
+import io.r2dbc.pool.ConnectionPoolConfiguration;
 import io.r2dbc.spi.ConnectionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +28,15 @@ public class R2dbcConfig extends AbstractR2dbcConfiguration {
     @Primary
     @Bean
     public ConnectionFactory connectionFactory() {
-        return MySqlConnectionFactory.from(configuration("localhost", "root", "1234", "r2dbc"));
+        ConnectionFactory connectionFactory = MySqlConnectionFactory.from(configuration("localhost", "root", "1234", "r2dbc"));
+        ConnectionPoolConfiguration poolConfiguration = ConnectionPoolConfiguration.builder(connectionFactory)
+            .acquireRetry(3)
+            .initialSize(20)
+            .validationQuery("SELECT 1")
+            .maxSize(20)
+            .build();
+
+        return new ConnectionPool(poolConfiguration);
     }
 
     @Bean
